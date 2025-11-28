@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: payment-service-db
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: payment-service-db
+spec:
+  serviceName: payment-service-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-service-db
+  template:
+    metadata:
+      labels:
+        app: payment-service-db
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:6.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 27017
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: payment-service-db-secrets
+                  key: username
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: payment-service-db-secrets
+                  key: password
+          volumeMounts:
+            - name: data
+              mountPath: /data/db
+            - name: initdb
+              mountPath: /docker-entrypoint-initdb.d
+          livenessProbe:
+            tcpSocket: { port: 27017 }
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket: { port: 27017 }
+            initialDelaySeconds: 10
+            periodSeconds: 5
+
+      volumes:
+        - name: initdb
+          configMap:
+            name: payment-service-db-init
+            defaultMode: 0755
+
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
