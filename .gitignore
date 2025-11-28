@@ -1,0 +1,15 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+
+values-secrets.yaml
+values.local.yaml
+*.env
+*.env.*
+*-secrets.local.yaml
+*.crt
+*.key
+
+*.log
+*.tmp
