@@ -8,7 +8,7 @@ data:
     db = db.getSiblingDB('payment_db');
     db.createUser({
         user: 'mongo',
-        pwd:  'mongo',
+        pwd:  '{{ .Values.secrets.paymentServiceDb.password }}',
         roles: [
             { role: 'readWrite', db: 'payment_db' },
             { role: 'dbAdmin', db: 'payment_db' }
