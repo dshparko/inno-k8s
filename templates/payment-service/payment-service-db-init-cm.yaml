@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: payment-service-db-init
+  namespace: {{ .Values.global.namespace }}
+data:
+  init.js: |
+    db = db.getSiblingDB('payment_db');
+    db.createUser({
+        user: 'mongo',
+        pwd:  'mongo',
+        roles: [
+            { role: 'readWrite', db: 'payment_db' },
+            { role: 'dbAdmin', db: 'payment_db' }
+        ]
+    });
