@@ -27,7 +27,7 @@ spec:
             - name: SPRING_DATASOURCE_USERNAME
               value: "postgres"
             - name: SPRING_DATASOURCE_PASSWORD
-              value: "postgres"
+              value: {{ .Values.secrets.orderServiceDb.password }}
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
               value: "kafka:9092"
 
