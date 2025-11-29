@@ -9,5 +9,5 @@ spec:
     app: authentication-service
   ports:
     - name: http
-      port: 8082
-      targetPort: 8082
+      port: 8084
+      targetPort: 8084
