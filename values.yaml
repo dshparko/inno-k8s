@@ -1,0 +1,29 @@
+global:
+  namespace: main-project
+  domain: main-project.local
+
+images:
+  apiGateway:
+    repository: dshparko/apigateway
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+  userService:
+    repository: dshparko/userservice
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+  authenticationService:
+    repository: dshparko/authservice
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+  orderService:
+    repository: dshparko/orderservice
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+  paymentService:
+    repository: dshparko/paymentservice
+    tag: "latest"
+    pullPolicy: IfNotPresent
