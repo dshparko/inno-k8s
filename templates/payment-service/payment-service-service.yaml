@@ -11,5 +11,5 @@ spec:
     app: payment-service
   ports:
     - name: http
-      port: 8084
-      targetPort: 8084
+      port: 8087
+      targetPort: 8087
