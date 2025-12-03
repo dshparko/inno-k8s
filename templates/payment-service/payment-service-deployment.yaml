@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: payment-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.images.paymentService.repository }}:{{ .Values.images.paymentService.tag }}"
+          imagePullPolicy: {{ .Values.images.paymentService.pullPolicy }}
+          ports:
+            - containerPort: 8087
+          env:
+            - name: SPRING_DATA_MONGODB_URI
+              value: "mongodb://mongo:mongo@payment-service-db:27017/payment_db?authSource=payment_db"
+            - name: LIQUIBASE_MONGODB_URI
+              value: "mongodb://mongo:mongo@payment-service-db:27017/payment_db?authSource=payment_db"
+            - name: SPRING_LIQUIBASE_ENABLED
+              value: "false"
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka:9092"
+
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8087
+            failureThreshold: 10
+            periodSeconds: 5
+
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8087
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8087
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            failureThreshold: 3
+

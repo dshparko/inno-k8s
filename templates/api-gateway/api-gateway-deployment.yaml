@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.images.apiGateway.repository }}:{{ .Values.images.apiGateway.tag }}"
+          imagePullPolicy: {{ .Values.images.apiGateway.pullPolicy }}
+          env:
+            - name: AUTH_SERVICE_URI
+              value: "http://authentication-service:8082"
+            - name: USER_SERVICE_URI
+              value: "http://user-service:8081"
+            - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+              value: "file:/config/"
+
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_SECRET
+          ports:
+            - containerPort: 8080
+
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            periodSeconds: 10
+            failureThreshold: 20
+            timeoutSeconds: 2
+
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 2
+
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 90
+            periodSeconds: 15
+            failureThreshold: 3
+            timeoutSeconds: 2
+
+          volumeMounts:
+            - name: gateway-config
+              mountPath: /config
+
+      volumes:
+        - name: gateway-config
+          configMap:
+            name: api-gateway-application
+            items:
+              - key: application.yaml
+                path: application.yaml

@@ -1,0 +1,29 @@
+# VCS / IDE
+.git/
+.idea/
+.vscode/
+
+# build артефакты
+target/
+build/
+dist/
+node_modules/
+
+# архивы/чарты
+charts/*.tgz
+*.tgz
+*.zip
+*.tar
+*.tar.gz
+
+# бинарники (мешающие файлы)
+*.dll
+*.exe
+*.so
+*.dylib
+*.a
+*.o
+
+# логи
+*.log
+*.LOG

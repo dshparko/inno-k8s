@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: authentication-service-config
+  namespace: {{ .Values.global.namespace }}
+data:
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://authentication-service-db:5432/auth_db"
+
